@@ -168,19 +168,32 @@ namespace Project.Controllers
         }
 
         [NonAction]
-        public void SendVerificationLinkEmail(string emailID, string activationCode)
+        public void SendVerificationLinkEmail(string emailID, string activationCode, string emailFor="VerifyAccount")
         {
-            var verifyUrl = "/User/VerifyAccount/" + activationCode;
+            var verifyUrl = "/User/"+emailFor+"/" + activationCode;
             var link = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, verifyUrl);
 
             var fromEmail = new MailAddress("alexandrovandrij@gmail.com", "Aleksandrov Andrij");
             var toEmail = new MailAddress(emailID);
             var fromEmailPassword = "limb123andrey456789";
-            string subject = "Your account is successfully created";
 
-            string body = "<br/><br/>We are excited to tell you that your account is "+
-                "successfuly created. Please click on the below link to verified your account "+
-                "<br/><br/><a href='"+link+"'>"+link+"</a>";
+            string subject = "";
+            string body = "";
+
+            if (emailFor == "VerifyAccount")
+            {
+                subject = "Your account is successfully created";
+
+                body = "<br/><br/>We are excited to tell you that your account is " +
+                    "successfuly created. Please click on the below link to verified your account " +
+                    "<br/><br/><a href='" + link + "'>" + link + "</a>";
+            }else if(emailFor == "ResetPassword")
+            {
+                subject = "Reset Password";
+                body = "Hi,<br/><br/>We got request for reset your account password. Please click on the below link to reset your password"+
+                    "<br/><br/><a href="+link+">Reset Password link</a>";
+            }
+           
 
             var smtp = new SmtpClient
             {
@@ -199,6 +212,95 @@ namespace Project.Controllers
                 IsBodyHtml = true
             })
             smtp.Send(message);
+        }
+
+        //Forgot Password
+        public ActionResult ForgotPassword()
+        {
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ForgotPassword(string EmailID)
+        {
+            //Verify Email
+            //Generate Reset password link
+            //Send Email
+            string message = "";
+            bool status = false;
+
+            using (MyDatabaseEntities dc=new MyDatabaseEntities())
+            {
+                var account = dc.Users.Where(a => a.EmailID == EmailID).FirstOrDefault();
+                if (account != null)
+                {
+                    //Send email for reset password
+                    string resetCode = Guid.NewGuid().ToString();
+                    SendVerificationLinkEmail(account.EmailID, resetCode, "ResetPassword");
+                    account.ResetPasswordCode = resetCode;
+
+                    dc.Configuration.ValidateOnSaveEnabled = false;
+                    dc.SaveChanges();
+                    message = "Reset password link has been sent to your email!";
+                    status = true;
+                }else
+                {
+                    message = "Account not found";
+                }
+            }
+            ViewBag.Message = message;
+            ViewBag.Status = status;
+            return View();
+        }
+
+        public ActionResult ResetPassword(string id)
+        {
+            //Verify the reset password link
+            //Find account associated with this link
+            //redirect to reset password page
+            using(MyDatabaseEntities dc= new MyDatabaseEntities())
+            {
+                var user = dc.Users.Where(a => a.ResetPasswordCode == id).FirstOrDefault();
+                if (user != null)
+                {
+                    ResetPasswordModel model = new ResetPasswordModel();
+                    model.ResetCode = id;
+                    return View(model);
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResetPassword(ResetPasswordModel model)
+        {
+            var message = "";
+            if (ModelState.IsValid)
+            {
+                using (MyDatabaseEntities dc = new MyDatabaseEntities())
+                {
+                    var user = dc.Users.Where(a => a.ResetPasswordCode == model.ResetCode).FirstOrDefault();
+                    if (user != null)
+                    {
+                        user.Password = Crypto.Hash(model.NewPassword);
+                        user.ResetPasswordCode = "";
+                        dc.Configuration.ValidateOnSaveEnabled = false;
+                        dc.SaveChanges();
+                        message = "New password updated successfuly";
+                    }
+                }
+            }else
+            {
+                message = "Something invalid";
+            }
+
+            ViewBag.Message = message;
+            return View(model);
         }
     }
 }

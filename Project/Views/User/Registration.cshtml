@@ -9,7 +9,7 @@
 @if (ViewBag.Status != null && Convert.ToBoolean(ViewBag.Status))
 {
         <div class="alert alert-success">
-            <strong>Success!</strong>Registration successfully done. Account activation link has been sent to your email @ViewBag.Message
+            <strong>Success!</strong> @ViewBag.Message
         </div>
 }
 else

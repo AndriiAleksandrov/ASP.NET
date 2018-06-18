@@ -22,5 +22,6 @@ namespace Project.Models
         public bool IsEmailVerified { get; set; }
         public System.Guid ActivationCode { get; set; }
         public string EmailID { get; set; }
+        public string ResetPasswordCode { get; set; }
     }
 }

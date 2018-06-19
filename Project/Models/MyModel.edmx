@@ -5,6 +5,29 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="Хранилище MyDatabaseModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Doctors">
+          <Key>
+            <PropertyRef Name="DoctorID" />
+          </Key>
+          <Property Name="DoctorID" Type="int" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Job" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Directory" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Pacjent">
+          <Key>
+            <PropertyRef Name="PacjentID" />
+          </Key>
+          <Property Name="PacjentID" Type="int" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Choroba" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+          <Property Name="Telefon" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DoctorID" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Users">
           <Key>
             <PropertyRef Name="UserID" />
@@ -19,8 +42,26 @@
           <Property Name="ActivationCode" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ResetPasswordCode" Type="nvarchar" MaxLength="100" />
         </EntityType>
+        <Association Name="FK__Pacjent__DoctorI__06CD04F7">
+          <End Role="Doctors" Type="Self.Doctors" Multiplicity="1" />
+          <End Role="Pacjent" Type="Self.Pacjent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Doctors">
+              <PropertyRef Name="DoctorID" />
+            </Principal>
+            <Dependent Role="Pacjent">
+              <PropertyRef Name="DoctorID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="Хранилище MyDatabaseModelContainer">
+          <EntitySet Name="Doctors" EntityType="Self.Doctors" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Pacjent" EntityType="Self.Pacjent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Pacjent__DoctorI__06CD04F7" Association="Self.FK__Pacjent__DoctorI__06CD04F7">
+            <End Role="Doctors" EntitySet="Doctors" />
+            <End Role="Pacjent" EntitySet="Pacjent" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -42,7 +83,50 @@
         </EntityType>
         <EntityContainer Name="MyDatabaseEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="Doctors" EntityType="MyDatabaseModel.Doctor" />
+          <EntitySet Name="Pacjents" EntityType="MyDatabaseModel.Pacjent" />
+          <AssociationSet Name="FK__Pacjent__DoctorI__06CD04F7" Association="MyDatabaseModel.FK__Pacjent__DoctorI__06CD04F7">
+            <End Role="Doctor" EntitySet="Doctors" />
+            <End Role="Pacjent" EntitySet="Pacjents" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Doctor">
+          <Key>
+            <PropertyRef Name="DoctorID" />
+          </Key>
+          <Property Name="DoctorID" Type="Int32" Nullable="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Job" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Directory" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Pacjents" Relationship="MyDatabaseModel.FK__Pacjent__DoctorI__06CD04F7" FromRole="Doctor" ToRole="Pacjent" />
+        </EntityType>
+        <EntityType Name="Pacjent">
+          <Key>
+            <PropertyRef Name="PacjentID" />
+          </Key>
+          <Property Name="PacjentID" Type="Int32" Nullable="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Choroba" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Telefon" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DoctorID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Doctor" Relationship="MyDatabaseModel.FK__Pacjent__DoctorI__06CD04F7" FromRole="Pacjent" ToRole="Doctor" />
+        </EntityType>
+        <Association Name="FK__Pacjent__DoctorI__06CD04F7">
+          <End Type="MyDatabaseModel.Doctor" Role="Doctor" Multiplicity="1" />
+          <End Type="MyDatabaseModel.Pacjent" Role="Pacjent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Doctor">
+              <PropertyRef Name="DoctorID" />
+            </Principal>
+            <Dependent Role="Pacjent">
+              <PropertyRef Name="DoctorID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -61,6 +145,31 @@
                 <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="IsEmailVerified" ColumnName="IsEmailVerified" />
                 <ScalarProperty Name="ActivationCode" ColumnName="ActivationCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Doctors">
+            <EntityTypeMapping TypeName="MyDatabaseModel.Doctor">
+              <MappingFragment StoreEntitySet="Doctors">
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Directory" ColumnName="Directory" />
+                <ScalarProperty Name="Job" ColumnName="Job" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="DoctorID" ColumnName="DoctorID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Pacjents">
+            <EntityTypeMapping TypeName="MyDatabaseModel.Pacjent">
+              <MappingFragment StoreEntitySet="Pacjent">
+                <ScalarProperty Name="DoctorID" ColumnName="DoctorID" />
+                <ScalarProperty Name="Telefon" ColumnName="Telefon" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Choroba" ColumnName="Choroba" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="PacjentID" ColumnName="PacjentID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

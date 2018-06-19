@@ -130,11 +130,16 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\DoctorsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PacjentsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Crypto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Doctor.cs">
+      <DependentUpon>MyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Extended\User.cs" />
     <Compile Include="Models\MyModel.Context.cs">
@@ -151,6 +156,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MyModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Pacjent.cs">
+      <DependentUpon>MyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ResetPasswordModel.cs" />
     <Compile Include="Models\User.cs">
@@ -220,8 +228,20 @@
     <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\User\ForgotPassword.cshtml" />
     <Content Include="Views\User\ResetPassword.cshtml" />
+    <Content Include="Views\Doctors\Create.cshtml" />
+    <Content Include="Views\Doctors\Delete.cshtml" />
+    <Content Include="Views\Doctors\Details.cshtml" />
+    <Content Include="Views\Doctors\Edit.cshtml" />
+    <Content Include="Views\Doctors\Index.cshtml" />
+    <Content Include="Views\Pacjents\Create.cshtml" />
+    <Content Include="Views\Pacjents\Delete.cshtml" />
+    <Content Include="Views\Pacjents\Details.cshtml" />
+    <Content Include="Views\Pacjents\Edit.cshtml" />
+    <Content Include="Views\Pacjents\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\Default\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />

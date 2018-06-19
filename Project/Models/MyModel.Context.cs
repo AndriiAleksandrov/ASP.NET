@@ -26,5 +26,7 @@ namespace Project.Models
         }
     
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Doctor> Doctors { get; set; }
+        public virtual DbSet<Pacjent> Pacjents { get; set; }
     }
 }
